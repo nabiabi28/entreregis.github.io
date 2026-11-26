@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test: Seguridad y Registro Telefónico en México</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      
+      background-image: linear-gradient(rgba(17, 24, 39, 0.55), rgba(17, 24, 39, 0.72)), url("fondo.jpg");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .contenedor {
+      max-width: 720px;
+      margin: 20px auto;
+      background-color: rgba(255, 255, 255, 0.96);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    
+    .franja-mexico {
+      display: flex;
+      height: 8px;
+      width: 100%;
+    }
+    .verde { flex: 1; background-color: #006847; }
+    .blanco { flex: 1; background-color: #ffffff; }
+    .rojo { flex: 1; background-color: #ce1126; }
+
+    .encabezado {
+      background-color: #881337;
+      color: #ffffff;
+      padding: 24px 28px;
+      text-align: center;
+    }
+
+    .insignia-superior {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.18);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 1.55rem;
+    }
+
+    .subtitulo {
+      margin: 0;
+      font-size: 0.92rem;
+      color: #ffe4e6;
+    }
+
+    /* Barra de avance */
+    .zona-progreso {
+      background-color: #fff1f2;
+      padding: 14px 28px;
+      border-bottom: 1px solid #fecdd3;
+    }
+
+    .progreso-texto {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #9f1239;
+      margin-bottom: 6px;
+    }
+
+    .progreso-barra {
+      width: 100%;
+      height: 12px;
+      background-color: #fecdd3;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progreso-relleno {
+      width: 7%;
+      height: 100%;
+      background-color: #ce1126;
+      transition: width 0.3s ease;
+    }
+
+    .cuerpo-encuesta {
+      padding: 28px;
+    }
+
+    
+    .pregunta {
+      display: none;
+    }
+
+    .pregunta.activa {
+      display: block;
+    }
+
+    .pregunta-titulo {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #111827;
+      line-height: 1.45;
+      margin-top: 0;
+      margin-bottom: 18px;
+    }
+
+    .caja-dato {
+      background-color: #fef2f2;
+      border-left: 4px solid #ce1126;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      font-weight: normal;
+      color: #4b5563;
+      margin-top: 10px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    
+    .opcion {
+      display: flex;
+      align-items: center;
+      background-color: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 13px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #374151;
+    }
+
+    .opcion:hover {
+      background-color: #fff1f2;
+      border-color: #fda4af;
+    }
+
+    .opcion input[type="radio"] {
+      margin-right: 12px;
+      transform: scale(1.2);
+      accent-color: #ce1126;
+    }
+
+  
+    .controles {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      font-size: 0.98rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-anterior {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-anterior:hover {
+      background-color: #d1d5db;
+    }
+
+    .btn-siguiente {
+      background-color: #006847;
+      color: #ffffff;
+      margin-left: auto;
+    }
+
+    .btn-siguiente:hover {
+      background-color: #005238;
+    }
+
+    .btn-enviar {
+      background-color: #ce1126;
+      color: #ffffff;
+      margin-left: auto;
+      display: none;
+    }
+
+    .btn-enviar:hover {
+      background-color: #a30d1e;
+    }
+
+    .mensaje-aviso {
+      color: #ce1126;
+      font-size: 0.88rem;
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* Pantalla final de resultados */
+    #resultado {
+      display: none;
+      padding: 28px;
+    }
+
+    .encabezado-resultado {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .icono-grande {
+      font-size: 3rem;
+      margin-bottom: 6px;
+    }
+
+    .tarjetas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .tarjeta {
+      flex: 1;
+      min-width: 240px;
+      background-color: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .tarjeta h3 {
+      margin: 0 0 8px 0;
+      color: #881337;
+    }
+
+    .barra-puntos {
+      width: 100%;
+      height: 14px;
+      background-color: #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .relleno-puntos {
+      height: 100%;
+      background-color: #ce1126;
+    }
+
+    .caja-diagnostico {
+      background-color: #fff1f2;
+      border-left: 5px solid #ce1126;
+      padding: 16px;
+      border-radius: 8px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .caja-consejos {
+      background-color: #ecfdf5;
+      border-left: 5px solid #006847;
+      padding: 16px;
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    .caja-consejos h4 {
+      margin: 0 0 8px 0;
+      color: #006847;
+    }
+
+    .caja-consejos ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .alerta {
+      background-color: #fee2e2;
+      border: 1px solid #ef4444;
+      color: #7f1d1d;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+  <audio id="miAudio" autoplay loop>
+  <source src="AUDIO.mpeg" type="audio/mpeg">
+</audio>
+
+<script>
+  const audio = document.getElementById("miAudio");
+  
+  audio.play().catch(() => {
+    // Si el navegador lo bloquea, lo reproduce al primer clic en la página
+    document.addEventListener("click", () => {
+      audio.play();
+    }, { once: true });
+  });
+</script>
+
+  <div class="contenedor">
+    <!-- Detalle tricolor -->
+    <div class="franja-mexico">
+      <div class="verde"></div>
+      <div class="blanco"></div>
+      <div class="rojo"></div>
+    </div>
+
+    <div class="encabezado">
+      <span class="insignia-superior">🇲🇽 Encuesta Ciudadana</span>
+      <h1>Registro de Líneas Telefónicas en México</h1>
+      <p class="subtitulo">
+        Descubre tu nivel de <strong>preocupación</strong> y <strong>desconocimiento</strong> en 14 preguntas rápidas.
+      </p>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="zona-progreso" id="zonaProgreso">
+      <div class="progreso-texto">
+        <span id="etiquetaPaso">Pregunta 1 de 14</span>
+        <span id="etiquetaPorcentaje">7%</span>
+      </div>
+      <div class="progreso-barra">
+        <div class="progreso-relleno" id="barraProgreso"></div>
+      </div>
+    </div>
+
+    <!-- Formulario por pasos -->
+    <form id="encuestaForm" class="cuerpo-encuesta">
+      <!-- 1 -->
+      <div class="pregunta activa" id="paso-1">
+        <p class="pregunta-titulo">
+          1. ¿Estás consciente de lo que implica haber registrado tu línea frente al Phishing?
+          <span class="caja-dato">
+            <strong>¿Qué es Phishing?</strong> Consiste en que un ciberdelincuente se hace pasar por una persona, empresa o institución legítima (como un banco, una red social o una entidad pública) para engañar al usuario y hacer que «muerda el anzuelo».
+          </span>
+        </p>
+        <label class="opcion"><input type="radio" name="p1" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p1" value="NO" /> No</label>
+      </div>
+
+      <!-- 2 -->
+      <div class="pregunta" id="paso-2">
+        <p class="pregunta-titulo">2. ¿Conoces los beneficios que obtuviste al registrar tu línea?</p>
+        <label class="opcion"><input type="radio" name="p2" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p2" value="NO" /> No</label>
+        <label class="opcion"><input type="radio" name="p2" value="DUDOSO" /> No estoy seguro/a</label>
+      </div>
+
+      <!-- 3 -->
+      <div class="pregunta" id="paso-3">
+        <p class="pregunta-titulo">3. ¿Conoces los riesgos que puedes llegar a notar después de haber registrado tu línea?</p>
+        <label class="opcion"><input type="radio" name="p3" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p3" value="NO" /> No</label>
+      </div>
+
+      <!-- 4 -->
+      <div class="pregunta" id="paso-4">
+        <p class="pregunta-titulo">4. ¿Sabes cómo puedes protegerte para evitar ser víctima de Phishing?</p>
+        <label class="opcion"><input type="radio" name="p4" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p4" value="NO" /> No</label>
+      </div>
+
+      <!-- 5 -->
+      <div class="pregunta" id="paso-5">
+        <p class="pregunta-titulo">5. ¿Tienes dudas sobre cómo usarán tu información después de registrarte?</p>
+        <label class="opcion"><input type="radio" name="p5" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p5" value="NO" /> No</label>
+      </div>
+
+      <!-- 6 -->
+      <div class="pregunta" id="paso-6">
+        <p class="pregunta-titulo">6. ¿Qué duda tienes principalmente?</p>
+        <label class="opcion"><input type="radio" name="p6" value="VIGILANCIA" /> Si seré vigilado</label>
+        <label class="opcion"><input type="radio" name="p6" value="ESTAFAS" /> Si mi información puede usarse para estafas o incriminar</label>
+        <label class="opcion"><input type="radio" name="p6" value="BANCOS" /> Qué pasará con mis cuentas bancarias y mi dinero</label>
+      </div>
+
+      <!-- 7 -->
+      <div class="pregunta" id="paso-7">
+        <p class="pregunta-titulo">7. ¿Te parece clara la información sobre la seguridad de tu información posterior al registro de tu línea?</p>
+        <label class="opcion"><input type="radio" name="p7" value="MUY_CLARA" /> Muy clara</label>
+        <label class="opcion"><input type="radio" name="p7" value="ALGO_CLARA" /> Algo clara</label>
+        <label class="opcion"><input type="radio" name="p7" value="POCA_CLARA" /> Poco clara</label>
+        <label class="opcion"><input type="radio" name="p7" value="NADA_CLARA" /> Nada clara</label>
+      </div>
+
+      <!-- 8 -->
+      <div class="pregunta" id="paso-8">
+        <p class="pregunta-titulo">8. ¿Confías en que tus datos estarán seguros al registrar tu línea?</p>
+        <label class="opcion"><input type="radio" name="p8" value="MUCHO" /> Mucho</label>
+        <label class="opcion"><input type="radio" name="p8" value="POCO" /> Poco</label>
+        <label class="opcion"><input type="radio" name="p8" value="NADA" /> Nada</label>
+      </div>
+
+      <!-- 9 -->
+      <div class="pregunta" id="paso-9">
+        <p class="pregunta-titulo">9. ¿Te preocupa que tus datos personales sean usados para otros fines?</p>
+        <label class="opcion"><input type="radio" name="p9" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p9" value="NO" /> No</label>
+      </div>
+
+      <!-- 10 -->
+      <div class="pregunta" id="paso-10">
+        <p class="pregunta-titulo">10. ¿Crees que el registro ayudará a reducir delitos como las extorsiones?</p>
+        <label class="opcion"><input type="radio" name="p10" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p10" value="NO" /> No</label>
+      </div>
+
+      <!-- 11 -->
+      <div class="pregunta" id="paso-11">
+        <p class="pregunta-titulo">11. ¿Te preocupa que te roben la identidad al dar tu CURP?</p>
+        <label class="opcion"><input type="radio" name="p11" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p11" value="NO" /> No</label>
+      </div>
+
+      <!-- 12 -->
+      <div class="pregunta" id="paso-12">
+        <p class="pregunta-titulo">12. ¿Has notado movimientos fuera de lo normal en tus cuentas y datos bancarios?</p>
+        <label class="opcion"><input type="radio" name="p12" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p12" value="NO" /> No</label>
+      </div>
+
+      <!-- 13 -->
+      <div class="pregunta" id="paso-13">
+        <p class="pregunta-titulo">13. ¿Has recibido llamadas o mensajes de números desconocidos?</p>
+        <label class="opcion"><input type="radio" name="p13" value="FRECUENTE" /> Sí, frecuentemente</label>
+        <label class="opcion"><input type="radio" name="p13" value="RARAMENTE" /> Raramente</label>
+        <label class="opcion"><input type="radio" name="p13" value="NO" /> No</label>
+      </div>
+
+      <!-- 14 -->
+      <div class="pregunta" id="paso-14">
+        <p class="pregunta-titulo">14. ¿Sabes cómo actuar en caso de robo de tu información?</p>
+        <label class="opcion"><input type="radio" name="p14" value="SI" /> Sí</label>
+        <label class="opcion"><input type="radio" name="p14" value="NO" /> No</label>
+        <label class="opcion"><input type="radio" name="p14" value="MAS_O_MENOS" /> Más o menos</label>
+      </div>
+
+      <p class="mensaje-aviso" id="mensajeAviso">⚠️ Por favor selecciona una opción antes de continuar.</p>
+
+      <div class="controles">
+        <button type="button" class="btn btn-anterior" id="btnAnterior" onclick="cambiarPaso(-1)">← Anterior</button>
+        <button type="button" class="btn btn-siguiente" id="btnSiguiente" onclick="cambiarPaso(1)">Siguiente →</button>
+        <button type="submit" class="btn btn-enviar" id="btnEnviar">Ver mis resultados</button>
+      </div>
+    </form>
+
+    <!-- Resultados -->
+    <div id="resultado"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
